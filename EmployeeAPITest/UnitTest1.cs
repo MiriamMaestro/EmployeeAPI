@@ -1,30 +1,58 @@
 using EmployeeAPI;
+using EmployeeAPI.Controller;
+using FluentAssertions;
 using Moq;
 using RestSharp;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
-//namespace EmployeeAPITest
-//{
-//    public class UnitTest1
-//    {
-//        [Fact]
-//        public void Test1()
-//        {
-//           private readonly Mock<IRepository> repositoryStub = new();
-//        var client = new RestClient("http://51.148.170.137:9111/");
-//        var request = new RestRequest("employee/{id}", Method.GET);
-//        //request.AddUrlSegment("{id}", "4f43eb3e-cec8-4621-afeb-04447a28d695");
+namespace EmployeeAPITest
+{
+    public class UnitTest1
+    {
+        private readonly Mock<IRepository> repositoryStub = new();
+        private readonly Random rand = new();
 
-//        //var content = client.Execute(request).Content;
+        [Fact]
+        public void GetEmployees_WhenExistingItem_ReturnAllEmployees()
+        {
+            
+            List<EmployeeUser> expectedEmployees = new List<EmployeeUser> { CreateRandomItem(), CreateRandomItem(), CreateRandomItem() };
+            
+            repositoryStub.Setup(repo => repo.GetEmployees())
+               .Returns(expectedEmployees);
 
-//        // act
-//        IRestResponse response = client.Execute(request);
+            var controller = new EmployeeController(repositoryStub.Object);
+            List<EmployeeUser> result = controller.GetEmployees();
 
-//        // assert
-//        Assert.Equals(HttpStatusCode.OK, response.StatusCode);
-           
-//        }
-//    }
-//}
+            expectedEmployees.Should().BeEquivalentTo(result);
+
+        }
+        [Fact]
+        public void GetEmployees_WhenUnExistingItem_ReturnError()
+        {
+
+            repositoryStub.Setup(repo => repo.GetEmployees())
+               .Returns((List<EmployeeUser>)null);
+
+            var controller = new EmployeeController(repositoryStub.Object);
+            List<EmployeeUser> result = controller.GetEmployees();
+
+            result.Should().Throw<ArgumentNullException>()
+                .WithParameterName("message"); ;
+
+        }
+        private EmployeeUser CreateRandomItem()
+        {
+            return new()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = Guid.NewGuid().ToString(),
+                CreatedDate = DateTime.Now
+            };
+        }
+    }
+}
+

@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
 
+
+
 namespace EmployeeAPI
 {
     public class EmployeeRepository : IRepository
     {
-        private static readonly RestClient client = new RestClient("http://51.148.170.137:9111/");
+        // private readonly RestClient client = new RestClient("http://51.148.170.137:9111/");
+        private readonly RestClient client;
+        public EmployeeRepository(string clientUrl)
+        {
+            client = new RestClient(clientUrl);
+        }
         public List<EmployeeUser> GetEmployees()
         {
             var request = new RestRequest("employee");
@@ -44,7 +51,7 @@ namespace EmployeeAPI
             }
         }
 
-        public static void CreateEmployee(EmployeeUser employee)
+        public void CreateEmployee(EmployeeUser employee)
         {
             var request = new RestRequest("employee", Method.POST);
             // request.AddJsonBody(new { name = "Miriam", startDate = "2021-03-18T00:00:00" });
@@ -76,12 +83,6 @@ namespace EmployeeAPI
             {
                 Console.WriteLine("The Employee has been Updated");
             }
-        }
-        public class EmployeeUser
-        {
-            public string id { get; set; }
-            public string name { get; set; }
-            public DateTime startDate { get; set; }
         }
     }
 }

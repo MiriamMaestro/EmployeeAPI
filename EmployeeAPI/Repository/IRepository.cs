@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using static EmployeeAPI.EmployeeRepository;
 
 namespace EmployeeAPI
 {
@@ -9,5 +8,6 @@ namespace EmployeeAPI
         EmployeeUser GetEmployee(string id);
         List<EmployeeUser> GetEmployees();
         void UpdateEmployee(int id, EmployeeUser employee);
+        void CreateEmployee(EmployeeUser employee);
     }
 }
